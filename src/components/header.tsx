@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BarChart3, LogOut, Workflow } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   user: {
@@ -23,12 +23,15 @@ const Header = ({ user }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 left-0 z-40 bg-white flex items-center justify-between border-b py-5 mb-5">
-      <div className="flex items-center gap-2 font-semibold text-xl">
+      <Link
+        to="/home"
+        className="flex items-center gap-2 font-semibold text-xl"
+      >
         <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
           <Workflow className="size-6" />
         </div>
         Prometheus Inc.
-      </div>
+      </Link>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">

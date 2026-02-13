@@ -3,7 +3,7 @@ import { AVAILABLE_TOOLS, CONNECTED_TOOLS } from "./constant/tools.config";
 
 const Home = () => {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <ToolSection
         title="Connected Tools"
         description="Tools that are currently active and linked to your workflows."
