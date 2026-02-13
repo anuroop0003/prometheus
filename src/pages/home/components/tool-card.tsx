@@ -25,7 +25,7 @@ const ToolCard = ({ tool }: ToolCardProps) => {
       className={cn(
         "border-2 transition-shadow",
         statusConfig.border,
-        tool.status !== "coming_soon" && "hover:shadow-custom cursor-pointer",
+        tool.status !== "coming_soon" && "hover:shadow-custom",
       )}
     >
       <CardHeader>
@@ -55,8 +55,8 @@ const ToolCard = ({ tool }: ToolCardProps) => {
           {tool.services.map((service) => (
             <Badge
               key={service}
-              variant="secondary"
-              className="rounded-sm text-xs capitalize"
+              variant="outline"
+              className="rounded-sm text-xs capitalize border-indigo-500 text-indigo-500"
             >
               {service}
             </Badge>
@@ -67,9 +67,9 @@ const ToolCard = ({ tool }: ToolCardProps) => {
       <CardFooter>
         <Button
           // disabled={statusConfig.disabled}
-          className={cn("w-full gap-2 cursor-pointer", statusConfig.button)}
+          className={cn("w-full cursor-pointer", statusConfig.button)}
         >
-          <statusConfig.Icon className="size-4" />
+          <statusConfig.Icon />
           {statusConfig.label}
         </Button>
       </CardFooter>
