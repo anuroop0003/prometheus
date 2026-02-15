@@ -89,4 +89,14 @@ export const AVAILABLE_TOOLS = [
     services: ["google", "calendar", "events"],
     status: "available",
   },
+  {
+    id: "jira",
+    name: "Jira",
+    description:
+      "Plan, track, and manage software projects with agile boards and issues.",
+    category: "Project Management",
+    icon: "/icons/Jira.svg",
+    services: ["jira", "issues", "projects", "tasks"],
+    status: "available",
+  },
 ];

@@ -1,17 +1,21 @@
 import Layout from "@/components/layout";
 import Analytics from "@/pages/analytics";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Home, Login } from "./lazy-pages";
+import { Home, Login, Notifications } from "./lazy-pages";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <Login />,
   },
   {
     path: "/",
     element: <Layout />,
     children: [
+      {
+        index: true,
+        element: <Navigate to="/home" replace />,
+      },
       {
         path: "home",
         element: <Home />,
@@ -21,8 +25,8 @@ export const router = createBrowserRouter([
         element: <Analytics />,
       },
       {
-        index: true,
-        element: <Navigate to="/home" replace />,
+        path: "notifications",
+        element: <Notifications />,
       },
     ],
   },
