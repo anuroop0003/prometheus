@@ -1,9 +1,11 @@
 import { NOTIFICATION_CARD_ICON_CONFIG } from "@/components/header/constant/notification-card-icon-config";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -11,38 +13,40 @@ import {
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 
-interface NotificationCardProps {
+interface Props {
   id: string;
   type: string;
   title: string;
   description: string;
-  status: string;
+  status: "pending" | "accepted" | "rejected";
   read: boolean;
+  timestamp: string;
 }
 
-const NOTIFICATION_CARD_STATUS_CONFIG: Record<
-  string,
-  {
-    cardClass: string;
-    titleClass: string;
-    showFooter: boolean;
-  }
-> = {
+const STATUS_CONFIG = {
   pending: {
-    cardClass: "bg-amber-600/10",
-    titleClass: "text-amber-600",
-    showFooter: true,
+    border: "border-l-4 border-l-amber-500",
+    badge: "Pending",
   },
   accepted: {
-    cardClass: "bg-emerald-600/10",
-    titleClass: "text-emerald-600",
-    showFooter: false,
+    border: "border-l-4 border-l-emerald-500",
+    badge: "Completed",
   },
   rejected: {
-    cardClass: "bg-red-600/10",
-    titleClass: "text-red-600",
-    showFooter: false,
+    border: "border-l-4 border-l-red-500",
+    badge: "Dismissed",
   },
+};
+
+const formatTimeAgo = (isoString: string) => {
+  const date = new Date(isoString);
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return date.toLocaleDateString();
 };
 
 const NotificationCard = ({
@@ -51,32 +55,57 @@ const NotificationCard = ({
   description,
   status,
   read,
-}: NotificationCardProps) => {
-  const config = NOTIFICATION_CARD_STATUS_CONFIG[status];
+  timestamp,
+}: Props) => {
+  const config = STATUS_CONFIG[status];
 
   return (
-    <Card className={cn("gap-3", config.cardClass)}>
-      <CardHeader className="flex items-center justify-between gap-6">
-        <CardTitle className={config.titleClass}>{title}</CardTitle>
+    <Card
+      className={cn(
+        "relative border bg-card transition-colors",
+        config.border,
+        !read && "bg-muted/40",
+      )}
+    >
+      {/* Unread dot */}
+      {!read && (
+        <span className="absolute right-3 top-3 size-2 rounded-full bg-primary" />
+      )}
+
+      <CardHeader className="gap-2">
+        <CardTitle className="leading-tight">{title}</CardTitle>
+        <CardDescription className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">
+            {formatTimeAgo(timestamp)}
+          </span>
+          <Badge className="text-xs rounded-md">{config.badge}</Badge>
+        </CardDescription>
         <CardAction>
           <img
             src={NOTIFICATION_CARD_ICON_CONFIG[type]}
             alt={type}
-            className="size-10 object-contain"
+            className="size-10"
           />
         </CardAction>
       </CardHeader>
-      <CardContent className="prose max-w-none prose-p:my-0 prose-ul:my-0 prose-li:my-0">
+
+      <CardContent
+        className="pt-0 text-sm text-muted-foreground
+        [&_strong]:text-foreground
+        [&_code]:rounded
+        [&_code]:bg-muted
+        [&_code]:px-1
+      "
+      >
         <ReactMarkdown>{description}</ReactMarkdown>
       </CardContent>
+
       {!read && (
-        <CardFooter className="justify-end gap-6">
-          <Button size="sm" variant="outline" className="cursor-pointer">
+        <CardFooter className="justify-end gap-3">
+          <Button size="sm" variant="outline">
             Cancel
           </Button>
-          <Button size="sm" className="cursor-pointer">
-            Confirm
-          </Button>
+          <Button size="sm">Confirm</Button>
         </CardFooter>
       )}
     </Card>

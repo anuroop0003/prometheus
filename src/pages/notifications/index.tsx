@@ -5,139 +5,63 @@ const Notifications = () => {
     {
       id: "consent-1",
       type: "google_meet",
-      provider: "google",
       status: "pending",
       title: "Schedule Google Meet",
-      description: `
-🤖 **I’d like to schedule a meeting for you**
-
-**Invitee:** \`alex.dev@company.com\`  
-**Topic:** **Frontend Architecture**  
-**Date:** **Tomorrow**  
-**Time:** **2:00 PM – 2:30 PM**
-
-Would you like me to create a **Google Meet** invite and send it?
-`,
-      metadata: {
-        meetingType: "google_meet",
-        invitees: ["alex.dev@company.com"],
-        startTime: "2026-02-16T14:00:00+05:30",
-        endTime: "2026-02-16T14:30:00+05:30",
-      },
-      actions: {
-        confirm: "create_meeting",
-        cancel: "dismiss",
-      },
+      description:
+        "🤖 **I’d like to schedule a meeting for you**\n\n**Invitee:** `alex.dev@company.com`\n**Topic:** **Frontend Architecture**\n**Date:** **Tomorrow**\n**Time:** **2:00 PM – 2:30 PM**",
       read: false,
-      timestamp: "Just now",
-      category: "Calendar",
+      timestamp: "2026-02-16T12:50:00.000Z",
     },
-
     {
       id: "consent-2",
       type: "google_chat",
-      provider: "google",
       status: "accepted",
       title: "Chat Message Sent",
-      description: `
-🧠 **Sprint summary successfully posted**
-
-**Channel:** \`#product-updates\`  
-**Content:** Sprint highlights, blockers, and next steps
-`,
-      metadata: {
-        channel: "#product-updates",
-        messageId: "chat_89342",
-      },
-      actions: {},
+      description:
+        "🧠 **Sprint summary successfully posted**\n\n**Channel:** `#product-updates`",
       read: true,
-      timestamp: "5m ago",
-      category: "Communication",
+      timestamp: "2026-02-16T12:45:00.000Z",
     },
-
     {
       id: "consent-3",
       type: "jira",
-      provider: "atlassian",
       status: "pending",
       title: "Create Jira Issue",
-      description: `
-🐞 **I noticed a recurring issue in your logs**
-
-**Project:** **CORE**  
-**Issue type:** Bug  
-**Priority:** 🔴 **High**  
-**Title:** *Fixing Auth Timeout*
-
-Do you want me to create this issue in **Jira**?
-`,
-      metadata: {
-        projectKey: "CORE",
-        issueType: "Bug",
-        priority: "High",
-        title: "Fixing Auth Timeout",
-      },
-      actions: {
-        confirm: "create_jira_issue",
-        cancel: "dismiss",
-      },
+      description:
+        "🐞 **Recurring issue detected**\n\n**Project:** CORE\n**Priority:** 🔴 High",
       read: false,
-      timestamp: "12m ago",
-      category: "Development",
+      timestamp: "2026-02-16T12:38:00.000Z",
     },
-
     {
       id: "consent-4",
       type: "google_tasks",
-      provider: "google",
       status: "accepted",
       title: "Task Added to Google Tasks",
-      description: `
-📌 **Task successfully added**
-
-- **Follow up with HR**
-`,
-      metadata: {
-        taskId: "task_2231",
-        list: "Personal",
-      },
-      actions: {},
+      description: "📌 **Task successfully added**\n\n- Follow up with HR",
       read: true,
-      timestamp: "1h ago",
-      category: "Organization",
+      timestamp: "2026-02-16T11:55:00.000Z",
     },
-
     {
       id: "consent-5",
       type: "google_tasks",
-      provider: "google",
       status: "rejected",
       title: "Channel Invitation Declined",
-      description: `
-🔐 **Access request was declined**
-
-**Channel:** \`#internal-security\`  
-**Requested members:** 2
-`,
-      metadata: {
-        channel: "#internal-security",
-        requestedCount: 2,
-      },
-      actions: {},
+      description:
+        "🔐 **Access request declined**\n\nChannel: `#internal-security`",
       read: true,
-      timestamp: "2h ago",
-      category: "Access",
+      timestamp: "2026-02-16T10:55:00.000Z",
     },
   ];
 
   return (
-    <section className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">Notifications</h2>
+    <section className="space-y-4">
+      <header>
+        <h2 className="text-lg font-semibold">Notifications</h2>
         <p className="text-sm text-muted-foreground">
-          Review and manage actions suggested or completed by your AI assistant.
+          Actions suggested or completed by your AI assistant
         </p>
-      </div>
+      </header>
+
       {notifications.map((n) => (
         <NotificationCard key={n.id} {...n} />
       ))}
