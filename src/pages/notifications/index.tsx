@@ -1,7 +1,15 @@
 import NotificationCard from "./components/card/notification-card";
 
 const Notifications = () => {
-  const notifications = [
+  const notifications: {
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    status: "pending" | "accepted" | "rejected";
+    read: boolean;
+    timestamp: string;
+  }[] = [
     {
       id: "consent-1",
       type: "google_meet",
