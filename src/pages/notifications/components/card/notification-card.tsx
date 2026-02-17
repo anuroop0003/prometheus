@@ -25,15 +25,15 @@ interface Props {
 
 const STATUS_CONFIG = {
   pending: {
-    border: "border-l-4 border-l-amber-500",
+    border: "border-l-amber-500",
     badge: "Pending",
   },
   accepted: {
-    border: "border-l-4 border-l-emerald-500",
+    border: "border-l-emerald-500",
     badge: "Completed",
   },
   rejected: {
-    border: "border-l-4 border-l-red-500",
+    border: "border-l-red-500",
     badge: "Dismissed",
   },
 };
@@ -62,12 +62,11 @@ const NotificationCard = ({
   return (
     <Card
       className={cn(
-        "relative border bg-card transition-colors",
+        "relative rounded-md border-0 border-l-4 shadow-custom bg-card",
         config.border,
         !read && "bg-muted/40",
       )}
     >
-      {/* Unread dot */}
       {!read && (
         <span className="absolute right-3 top-3 size-2 rounded-full bg-primary" />
       )}

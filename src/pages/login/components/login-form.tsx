@@ -24,11 +24,13 @@ import {
 import { useLogin } from "@/services/query/login/login.api";
 import { loginSchema, type LoginFormValues } from "@/validations/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { mutateAsync, isPending } = useLogin();
   const {
     control,
@@ -45,9 +47,24 @@ export const LoginForm = () => {
   const onSubmit = (data: LoginFormValues) => {
     toast.promise(mutateAsync(data), {
       icon: null,
-      loading: <PendingToaster />,
-      success: <SuccessToaster />,
-      error: <ErrorToaster />,
+      loading: (
+        <PendingToaster
+          title="Logging in..."
+          description="Verifying your credentials."
+        />
+      ),
+      success: (
+        <SuccessToaster
+          title="Login Successful"
+          description="Redirecting to your dashboard."
+        />
+      ),
+      error: (
+        <ErrorToaster
+          title="Login Failed"
+          description="Please check your email and password."
+        />
+      ),
     });
   };
 
@@ -91,11 +108,21 @@ export const LoginForm = () => {
                   >
                     <InputGroupInput
                       {...field}
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Enter password"
                     />
                     <InputGroupAddon align="inline-end">
-                      <EyeOff className="h-4 w-4 cursor-pointer" />
+                      {showPassword ? (
+                        <Eye
+                          className="h-4 w-4 cursor-pointer"
+                          onClick={() => setShowPassword(false)}
+                        />
+                      ) : (
+                        <EyeOff
+                          className="h-4 w-4 cursor-pointer"
+                          onClick={() => setShowPassword(true)}
+                        />
+                      )}
                     </InputGroupAddon>
                   </InputGroup>
                 )}

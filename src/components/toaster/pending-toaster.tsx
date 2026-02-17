@@ -1,15 +1,20 @@
 import { Loader } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
-const PendingToaster = () => {
+interface PendingToasterProps {
+  title?: string;
+  description?: string;
+}
+
+const PendingToaster = ({
+  title = "Processing...",
+  description = "Please wait while we process your request.",
+}: PendingToasterProps) => {
   return (
-    <Alert variant="pending" className="bg-amber--50">
+    <Alert variant="pending">
       <Loader className="animate-spin" />
-      <AlertTitle>Your subscription will expire in 3 days.</AlertTitle>
-      <AlertDescription className="font-normal">
-        Renew now to avoid service interruption or upgrade to a paid plan to
-        continue using the service.
-      </AlertDescription>
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription className="font-normal">{description}</AlertDescription>
     </Alert>
   );
 };
