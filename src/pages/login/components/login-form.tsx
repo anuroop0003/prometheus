@@ -27,10 +27,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const navigate = useNavigate();
   const { mutateAsync, isPending } = useLogin();
   const {
     control,
@@ -53,12 +55,19 @@ export const LoginForm = () => {
           description="Verifying your credentials."
         />
       ),
-      success: (
-        <SuccessToaster
-          title="Login Successful"
-          description="Redirecting to your dashboard."
-        />
-      ),
+      success: (response: any) => {
+        const token = response.data?.token;
+        if (token) {
+          localStorage.setItem("access_token", token);
+        }
+        navigate("/home");
+        return (
+          <SuccessToaster
+            title="Login Successful"
+            description="Redirecting to your dashboard."
+          />
+        );
+      },
       error: (
         <ErrorToaster
           title="Login Failed"
