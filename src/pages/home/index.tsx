@@ -1,23 +1,24 @@
 import { useTools } from "@/services/query/tools/tools.api";
 import ToolSection from "./components/tool-section";
+import { ToolSectionSkeleton } from "./components/tool-section-skeleton";
 
 const Home = () => {
   const { data, isLoading } = useTools();
 
+  const allTools = data?.tools || [];
+  const connectedTools = allTools.filter((tool) => tool.status === "connected");
+  const availableTools = allTools.filter(
+    (tool) => tool.status === "available" || tool.status === "coming_soon",
+  );
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-muted-foreground animate-pulse">
-          Loading tools...
-        </div>
+      <div className="space-y-12">
+        <ToolSectionSkeleton />
+        <ToolSectionSkeleton />
       </div>
     );
   }
-
-  const allTools = data?.tools || [];
-
-  const connectedTools = allTools.filter((tool) => tool.status === "connected");
-  const availableTools = allTools.filter((tool) => tool.status === "available");
 
   return (
     <div className="space-y-12">

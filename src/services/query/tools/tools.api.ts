@@ -9,5 +9,6 @@ export const useTools = () => {
       const response = await api.get("/tools/connected");
       return response.data;
     },
+    refetchOnWindowFocus: false,
   });
 };

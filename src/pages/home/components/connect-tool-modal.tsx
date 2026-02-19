@@ -10,20 +10,13 @@ import {
 import { useConnectTool } from "@/services/query/subscriptions/subscriptions.api";
 import type { Tool } from "@/services/query/tools/tools.types";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { toast } from "sonner";
 
 interface ConnectToolModalProps {
-  tool: Tool | null;
+  tool: Tool;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const TRUSTED_ORIGINS = [
-  window.location.origin,
-  "http://localhost:4000",
-  "https://prometheus-xi-three.vercel.app",
-];
 
 const ConnectToolModal = ({
   tool,
@@ -32,27 +25,6 @@ const ConnectToolModal = ({
 }: ConnectToolModalProps) => {
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useConnectTool();
-
-  useEffect(() => {
-    if (!open || !tool) return;
-
-    const handleMessage = (event: MessageEvent) => {
-      if (!TRUSTED_ORIGINS.includes(event.origin)) return;
-
-      if (event.data?.type === "AUTH_SUCCESS") {
-        onOpenChange(false);
-        toast.success(`${tool.name} connected successfully!`);
-        queryClient.invalidateQueries({ queryKey: ["tools"] });
-      } else if (event.data?.type === "AUTH_ERROR") {
-        toast.error(
-          `Failed to connect ${tool.name}: ${event.data.error || "Unknown error"}`,
-        );
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [tool, open, onOpenChange, queryClient]);
 
   const handleAuthenticate = async () => {
     if (!tool) return;
@@ -67,10 +39,21 @@ const ConnectToolModal = ({
         const left = window.screen.width / 2 - width / 2;
         const top = window.screen.height / 2 - height / 2;
 
-        window.open(
+        const popup = window.open(
           response.authUrl,
           "ConnectToolPopup",
           `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
+        );
+
+        window.addEventListener(
+          "message",
+          (event) => {
+            if (event.data.type === "AUTH_SUCCESS") {
+              queryClient.invalidateQueries({ queryKey: ["tools"] });
+              if (popup) popup.close();
+            }
+          },
+          { once: true },
         );
       }
     } catch (error) {
@@ -102,21 +85,19 @@ const ConnectToolModal = ({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed">
             {tool.description}
           </p>
 
-          <div className="rounded-lg bg-muted/50 p-4 border border-border">
-            <h4 className="text-sm font-semibold mb-2">
-              Required Permissions:
-            </h4>
-            <ul className="grid grid-cols-1 gap-2">
+          <div className="rounded-lg bg-muted/50 p-3 border">
+            <h4 className="font-semibold mb-2">Required Permissions:</h4>
+            <ul className="flex flex-col gap-1.5">
               {tool.services.map((service) => (
                 <li
                   key={service}
-                  className="flex items-center text-xs text-muted-foreground"
+                  className="flex items-center text-sm text-muted-foreground"
                 >
-                  <span className="mr-2 h-1 w-1 rounded-full bg-primary" />
+                  <span className="mr-2 size-1.5 rounded-full bg-primary" />
                   Full {service.charAt(0).toUpperCase() + service.slice(1)}{" "}
                   integration
                 </li>
