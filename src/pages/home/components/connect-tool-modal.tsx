@@ -8,9 +8,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import api from "@/services/instance/api";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useConnectTool } from "@/services/query/subscriptions/subscriptions.api";
 
 interface ConnectToolModalProps {
     tool: any;
@@ -19,8 +19,8 @@ interface ConnectToolModalProps {
 }
 
 const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) => {
-    const [isAuthenticating, setIsAuthenticating] = React.useState(false);
     const queryClient = useQueryClient();
+    const { mutateAsync, isPending } = useConnectTool();
 
     React.useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
@@ -33,12 +33,10 @@ const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) =
             }
 
             if (event.data?.type === "AUTH_SUCCESS") {
-                setIsAuthenticating(false);
                 onOpenChange(false);
                 toast.success(`${tool.name} connected successfully!`);
                 queryClient.invalidateQueries({ queryKey: ["tools"] });
             } else if (event.data?.type === "AUTH_ERROR") {
-                setIsAuthenticating(false);
                 toast.error(`Failed to connect ${tool.name}: ${event.data.error}`);
             }
         };
@@ -48,22 +46,22 @@ const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) =
     }, [tool, onOpenChange, queryClient]);
 
     const handleAuthenticate = async () => {
-        setIsAuthenticating(true);
         try {
-            let authEndpoint = `/google/auth?toolId=${tool.id}`;
-            if (tool.id === "slack") {
-                authEndpoint = `/tools/slack/auth?toolId=${tool.id}`;
-            }
+            const provider = tool.services.includes("google") ? "google" : "slack";
 
-            const response = await api.get(authEndpoint);
-            if (response.data?.authUrl) {
+            const response = await mutateAsync({
+                provider,
+                toolId: tool.id
+            });
+
+            if (response?.authUrl) {
                 const width = 600;
                 const height = 700;
                 const left = window.screen.width / 2 - width / 2;
                 const top = window.screen.height / 2 - height / 2;
 
                 window.open(
-                    response.data.authUrl,
+                    response.authUrl,
                     "Connect Tool",
                     `width=${width},height=${height},left=${left},top=${top}`
                 );
@@ -71,7 +69,6 @@ const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) =
         } catch (error) {
             console.error("Failed to get auth URL:", error);
             toast.error("Failed to start authentication.");
-            setIsAuthenticating(false);
         }
     };
 
@@ -101,11 +98,11 @@ const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) =
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAuthenticating}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancel
                     </Button>
-                    <Button onClick={handleAuthenticate} disabled={isAuthenticating}>
-                        {isAuthenticating ? "Waiting for Auth..." : "Authenticate"}
+                    <Button onClick={handleAuthenticate} disabled={isPending}>
+                        {isPending ? "Waiting for Auth..." : "Authenticate"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

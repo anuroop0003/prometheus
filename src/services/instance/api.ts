@@ -6,10 +6,11 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("accessToken");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers["x-access-token"] = token;
+      config.headers["ngrok-skip-browser-warning"] = "true";
     }
     return config;
   },

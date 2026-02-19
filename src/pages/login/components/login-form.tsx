@@ -41,6 +41,7 @@ export const LoginForm = () => {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -56,9 +57,9 @@ export const LoginForm = () => {
         />
       ),
       success: (response: any) => {
-        const token = response.data?.token;
+        const token = response.data?.accessToken;
         if (token) {
-          localStorage.setItem("access_token", token);
+          localStorage.setItem("accessToken", token);
         }
         navigate("/home");
         return (
@@ -88,6 +89,22 @@ export const LoginForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="John Doe"
+                    className={errors.name ? "border border-destructive" : ""}
+                  />
+                )}
+              />
+              <FieldError className="-mt-2">{errors.name?.message}</FieldError>
+            </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Controller

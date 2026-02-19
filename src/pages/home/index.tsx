@@ -12,18 +12,24 @@ const Home = () => {
     );
   }
 
+  const allTools = data?.availableTools || [];
+  const connectedTools = allTools.filter((tool) => tool.status === "connected");
+  const availableTools = allTools.filter(
+    (tool) => tool.status === "available" || tool.status === "coming_soon",
+  );
+
   return (
     <div className="space-y-12">
       <ToolSection
         title="Connected Tools"
         description="Tools that are currently active and linked to your workflows."
-        tools={data?.connected || []}
+        tools={connectedTools}
       />
 
       <ToolSection
         title="Available Tools"
         description="Connect new tools to extend your workflow capabilities."
-        tools={data?.available || []}
+        tools={availableTools}
       />
     </div>
   );
