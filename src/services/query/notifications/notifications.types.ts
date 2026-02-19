@@ -1,4 +1,10 @@
-export type ActionStatus = "pending" | "approved" | "declined" | "executing" | "completed" | "failed";
+export type ActionStatus =
+  | "pending"
+  | "approved"
+  | "declined"
+  | "executing"
+  | "completed"
+  | "failed";
 
 export interface Action {
   _id: string;

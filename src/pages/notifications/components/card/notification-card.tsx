@@ -30,7 +30,10 @@ interface Props {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<ActionStatus, { border: string; badge: string; color: string; bg: string }> = {
+const STATUS_CONFIG: Record<
+  ActionStatus,
+  { border: string; badge: string; color: string; bg: string }
+> = {
   pending: {
     border: "border-l-amber-500",
     badge: "Action Required",
@@ -70,10 +73,22 @@ const STATUS_CONFIG: Record<ActionStatus, { border: string; badge: string; color
 };
 
 const PRIORITY_CONFIG = {
-  high: { label: "High Priority", color: "bg-red-100 text-red-700 border-red-200" },
-  medium: { label: "Medium", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  low: { label: "Low", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  ignore: { label: "Low", color: "bg-slate-100 text-slate-700 border-slate-200" },
+  high: {
+    label: "High Priority",
+    color: "bg-red-100 text-red-700 border-red-200",
+  },
+  medium: {
+    label: "Medium",
+    color: "bg-amber-100 text-amber-700 border-amber-200",
+  },
+  low: {
+    label: "Low",
+    color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  },
+  ignore: {
+    label: "Low",
+    color: "bg-slate-100 text-slate-700 border-slate-200",
+  },
 };
 
 const formatTimeAgo = (isoString: string) => {
@@ -103,7 +118,10 @@ const NotificationCard = ({
   const priorityConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.medium;
   const { mutateAsync: updateStatus, isPending } = useUpdateActionStatus();
 
-  const handleAction = async (newStatus: "approved" | "declined", e: React.MouseEvent) => {
+  const handleAction = async (
+    newStatus: "approved" | "declined",
+    e: React.MouseEvent,
+  ) => {
     e.stopPropagation();
     toast.promise(updateStatus({ id, status: newStatus }), {
       loading: `${newStatus === "approved" ? "Approving" : "Declining"} action...`,
@@ -134,7 +152,13 @@ const NotificationCard = ({
             <CardTitle className="text-base font-bold leading-tight tracking-tight">
               {title || "Action Request"}
             </CardTitle>
-            <Badge variant="outline" className={cn("text-[10px] uppercase font-bold px-1.5 py-0 border", priorityConfig.color)}>
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-[10px] uppercase font-bold px-1.5 py-0 border",
+                priorityConfig.color,
+              )}
+            >
               {priorityConfig.label}
             </Badge>
           </div>
@@ -144,19 +168,28 @@ const NotificationCard = ({
               {formatTimeAgo(createdAt)}
             </div>
             <span className="size-1 rounded-full bg-muted-foreground/30" />
-            <span className={cn("text-xs font-semibold", config.color)}>{config.badge}</span>
+            <span className={cn("text-xs font-semibold", config.color)}>
+              {config.badge}
+            </span>
           </CardDescription>
         </div>
         <div className="flex items-center gap-3">
           <div className="bg-muted/30 p-1.5 rounded-lg border border-muted/50">
             <img
-              src={NOTIFICATION_CARD_ICON_CONFIG[type] || "/icons/default-action.svg"}
+              src={
+                NOTIFICATION_CARD_ICON_CONFIG[type] ||
+                "/icons/default-action.svg"
+              }
               alt={type}
               className="size-8 object-contain drop-shadow-sm"
             />
           </div>
           <div className="p-1 hover:bg-muted rounded-full transition-colors">
-            {expanded ? <ChevronUp className="size-4 text-muted-foreground" /> : <ChevronDown className="size-4 text-muted-foreground" />}
+            {expanded ? (
+              <ChevronUp className="size-4 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="size-4 text-muted-foreground" />
+            )}
           </div>
         </div>
       </CardHeader>
@@ -165,8 +198,15 @@ const NotificationCard = ({
         <div className="text-[13px] text-foreground/90 leading-relaxed max-w-4xl">
           <ReactMarkdown
             components={{
-              strong: ({ node, ...props }) => <strong className="text-foreground font-bold" {...props} />,
-              code: ({ node, ...props }) => <code className="bg-muted px-1.5 py-0.5 rounded text-primary font-mono text-xs" {...props} />,
+              strong: ({ node, ...props }) => (
+                <strong className="text-foreground font-bold" {...props} />
+              ),
+              code: ({ node, ...props }) => (
+                <code
+                  className="bg-muted px-1.5 py-0.5 rounded text-primary font-mono text-xs"
+                  {...props}
+                />
+              ),
             }}
           >
             {description || ""}
@@ -180,7 +220,9 @@ const NotificationCard = ({
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary/40 transition-colors" />
                 <div className="flex items-center gap-2 mb-2">
                   <AlertCircle className="size-4 text-primary" />
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-tighter">AI Reasoning</h4>
+                  <h4 className="text-xs font-bold text-primary uppercase tracking-tighter">
+                    AI Reasoning
+                  </h4>
                 </div>
                 <p className="text-[13px] text-muted-foreground leading-relaxed italic">
                   "{reasoning}"
@@ -195,10 +237,17 @@ const NotificationCard = ({
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {Object.entries(payload || {}).map(([key, value]) => (
-                  <div key={key} className="bg-muted/40 rounded-lg p-3 border border-muted/80 flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{key.replace(/_/g, ' ')}</span>
+                  <div
+                    key={key}
+                    className="bg-muted/40 rounded-lg p-3 border border-muted/80 flex flex-col gap-1"
+                  >
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                      {key.replace(/_/g, " ")}
+                    </span>
                     <span className="text-xs text-foreground font-medium break-all">
-                      {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                      {typeof value === "object"
+                        ? JSON.stringify(value, null, 2)
+                        : String(value)}
                     </span>
                   </div>
                 ))}
@@ -224,7 +273,11 @@ const NotificationCard = ({
           </Button>
           <Button
             size="sm"
-            className={cn("text-white font-bold shadow-md px-8 h-9 transition-all active:scale-95", config.bg, "hover:opacity-90")}
+            className={cn(
+              "text-white font-bold shadow-md px-8 h-9 transition-all active:scale-95",
+              config.bg,
+              "hover:opacity-90",
+            )}
             onClick={(e) => handleAction("approved", e)}
             disabled={isPending}
           >

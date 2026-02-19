@@ -1,10 +1,6 @@
 import api from "@/services/instance/api";
 import { useQuery } from "@tanstack/react-query";
-import type { Tool } from "@/pages/home/constant/tools.config";
-
-export interface ToolsResponse {
-  availableTools: Tool[];
-}
+import type { ToolsResponse } from "./tools.types";
 
 export const useTools = () => {
   return useQuery<ToolsResponse>({

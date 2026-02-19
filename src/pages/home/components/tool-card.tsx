@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { Tool } from "@/services/query/tools/tools.types";
+import { useState } from "react";
 import { TOOL_STYLE_CONFIG } from "../constant/tool-style.config";
-import type { Tool } from "../constant/tools.config";
 import ConnectToolModal from "./connect-tool-modal";
 
 interface ToolCardProps {
@@ -20,7 +20,7 @@ interface ToolCardProps {
 }
 
 const ToolCard = ({ tool }: ToolCardProps) => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const statusConfig = TOOL_STYLE_CONFIG[tool.status];
 
   return (

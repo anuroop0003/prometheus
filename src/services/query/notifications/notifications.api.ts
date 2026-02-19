@@ -13,15 +13,15 @@ export const useActions = (filter?: { status?: string; type?: string }) => {
 };
 
 export const useUpdateActionStatus = () => {
-    const queryClient = useQueryClient();
-    
-    return useMutation<Action, Error, UpdateActionStatusPayload>({
-        mutationFn: async ({ id, status }) => {
-            const response = await api.post(`/actions/${id}/status`, { status });
-            return response.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["actions"] });
-        }
-    });
+  const queryClient = useQueryClient();
+
+  return useMutation<Action, Error, UpdateActionStatusPayload>({
+    mutationFn: async ({ id, status }) => {
+      const response = await api.post(`/actions/${id}/status`, { status });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
+    },
+  });
 };

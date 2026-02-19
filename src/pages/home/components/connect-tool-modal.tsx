@@ -1,113 +1,151 @@
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
 import { useConnectTool } from "@/services/query/subscriptions/subscriptions.api";
+import type { Tool } from "@/services/query/tools/tools.types";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface ConnectToolModalProps {
-    tool: any;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+  tool: Tool | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const ConnectToolModal = ({ tool, open, onOpenChange }: ConnectToolModalProps) => {
-    const queryClient = useQueryClient();
-    const { mutateAsync, isPending } = useConnectTool();
+const TRUSTED_ORIGINS = [
+  window.location.origin,
+  "http://localhost:4000",
+  "https://prometheus-xi-three.vercel.app",
+];
 
-    React.useEffect(() => {
-        const handleMessage = (event: MessageEvent) => {
-            // Check if the message comes from a trusted origin (backend or same origin)
-            // In dev, we allow localhost:4000. In prod, this should be the backend URL.
-            const trustedOrigins = [window.location.origin, "http://localhost:4000", "https://prometheus-xi-three.vercel.app"];
-            if (!trustedOrigins.includes(event.origin)) {
-                console.warn("[ConnectToolModal] Blocking message from untrusted origin:", event.origin);
-                return;
-            }
+const ConnectToolModal = ({
+  tool,
+  open,
+  onOpenChange,
+}: ConnectToolModalProps) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useConnectTool();
 
-            if (event.data?.type === "AUTH_SUCCESS") {
-                onOpenChange(false);
-                toast.success(`${tool.name} connected successfully!`);
-                queryClient.invalidateQueries({ queryKey: ["tools"] });
-            } else if (event.data?.type === "AUTH_ERROR") {
-                toast.error(`Failed to connect ${tool.name}: ${event.data.error}`);
-            }
-        };
+  useEffect(() => {
+    if (!open || !tool) return;
 
-        window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
-    }, [tool, onOpenChange, queryClient]);
+    const handleMessage = (event: MessageEvent) => {
+      if (!TRUSTED_ORIGINS.includes(event.origin)) return;
 
-    const handleAuthenticate = async () => {
-        try {
-            const provider = tool.services.includes("google") ? "google" : "slack";
-
-            const response = await mutateAsync({
-                provider,
-                toolId: tool.id
-            });
-
-            if (response?.authUrl) {
-                const width = 600;
-                const height = 700;
-                const left = window.screen.width / 2 - width / 2;
-                const top = window.screen.height / 2 - height / 2;
-
-                window.open(
-                    response.authUrl,
-                    "Connect Tool",
-                    `width=${width},height=${height},left=${left},top=${top}`
-                );
-            }
-        } catch (error) {
-            console.error("Failed to get auth URL:", error);
-            toast.error("Failed to start authentication.");
-        }
+      if (event.data?.type === "AUTH_SUCCESS") {
+        onOpenChange(false);
+        toast.success(`${tool.name} connected successfully!`);
+        queryClient.invalidateQueries({ queryKey: ["tools"] });
+      } else if (event.data?.type === "AUTH_ERROR") {
+        toast.error(
+          `Failed to connect ${tool.name}: ${event.data.error || "Unknown error"}`,
+        );
+      }
     };
 
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <div className="flex items-center gap-4">
-                        <img src={tool.icon} alt={tool.name} className="size-12 object-contain" />
-                        <div>
-                            <DialogTitle>Connect {tool.name}</DialogTitle>
-                            <DialogDescription>{tool.category}</DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [tool, open, onOpenChange, queryClient]);
 
-                <div className="py-6">
-                    <p className="text-sm text-muted-foreground">{tool.description}</p>
-                    <div className="mt-4 rounded-md bg-muted p-4">
-                        <h4 className="text-sm font-medium">Access required:</h4>
-                        <ul className="mt-2 text-xs text-muted-foreground list-disc list-inside space-y-1">
-                            {tool.services.map((service: string) => (
-                                <li key={service} className="capitalize">{service} access</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+  const handleAuthenticate = async () => {
+    if (!tool) return;
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-                        Cancel
-                    </Button>
-                    <Button onClick={handleAuthenticate} disabled={isPending}>
-                        {isPending ? "Waiting for Auth..." : "Authenticate"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+    try {
+      const provider = tool.services.includes("google") ? "google" : "slack";
+      const response = await mutateAsync({ provider, toolId: tool.id });
+
+      if (response?.authUrl) {
+        const width = 600;
+        const height = 700;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+
+        window.open(
+          response.authUrl,
+          "ConnectToolPopup",
+          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
+        );
+      }
+    } catch (error) {
+      toast.error("Could not initiate authentication.");
+    }
+  };
+
+  if (!tool) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-background p-2">
+              <img
+                src={tool.icon}
+                alt={tool.name}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <div className="text-left">
+              <DialogTitle className="text-xl">Connect {tool.name}</DialogTitle>
+              <DialogDescription className="text-xs uppercase tracking-wider font-semibold">
+                {tool.category}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {tool.description}
+          </p>
+
+          <div className="rounded-lg bg-muted/50 p-4 border border-border">
+            <h4 className="text-sm font-semibold mb-2">
+              Required Permissions:
+            </h4>
+            <ul className="grid grid-cols-1 gap-2">
+              {tool.services.map((service) => (
+                <li
+                  key={service}
+                  className="flex items-center text-xs text-muted-foreground"
+                >
+                  <span className="mr-2 h-1 w-1 rounded-full bg-primary" />
+                  Full {service.charAt(0).toUpperCase() + service.slice(1)}{" "}
+                  integration
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-6">
+          <Button
+            variant="outline"
+            className="cursor-pointer w-30"
+            onClick={() => onOpenChange(false)}
+            disabled={isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAuthenticate}
+            disabled={isPending}
+            loading={isPending}
+            className="cursor-pointer w-30"
+          >
+            Connect Tool
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default ConnectToolModal;

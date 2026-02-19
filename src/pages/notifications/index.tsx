@@ -8,7 +8,9 @@ const Notifications = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-muted-foreground animate-pulse">Loading notifications...</div>
+        <div className="text-muted-foreground animate-pulse">
+          Loading notifications...
+        </div>
       </div>
     );
   }
