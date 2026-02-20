@@ -34,7 +34,7 @@ export const useEnhanceAction = () => {
 
   return useMutation<Action, Error, { id: string; description: string }>({
     mutationFn: async ({ id, description }) => {
-      const { data } = await api.post(`/enhance/${id}`, {
+      const { data } = await api.post(`/actions/enhance/${id}`, {
         description,
       });
       return data;
