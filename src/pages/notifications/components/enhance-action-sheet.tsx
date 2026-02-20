@@ -62,6 +62,8 @@ const EnhanceActionSheet = ({
       });
 
       if (response && response.enhacement.enhancedPayload) {
+        console.log("responseresponseresponse", response);
+
         form.reset(response.enhacement.enhancedPayload);
         setEnhancePrompt("");
         toast.custom(
