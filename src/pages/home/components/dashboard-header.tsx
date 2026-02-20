@@ -46,8 +46,8 @@ export const DashboardHeader = ({
             variant="outline"
             size="sm"
             onClick={() => {
-              localStorage.removeItem("token");
-              window.location.href = "/";
+              localStorage.clear();
+              navigate("/login");
             }}
             className="cursor-pointer rounded-none border-slate-700 bg-transparent text-slate-400 hover:bg-slate-800 hover:text-white transition-colors h-8 text-xs font-bold uppercase tracking-wider ml-4 hidden sm:flex"
           >
