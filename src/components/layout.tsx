@@ -4,13 +4,7 @@ import Header from "./header/header";
 const Layout = () => {
   return (
     <div className="relative m-5 mt-0">
-      <Header
-        user={{
-          name: "Anuroop K",
-          email: "anuroop@example.com",
-          avatarUrl: "/avatar.png",
-        }}
-      />
+      <Header />
       <main>
         <Outlet />
       </main>

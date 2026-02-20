@@ -1,6 +1,5 @@
-import NotificationCard from "./components/card/notification-card";
-
 import { useActions } from "@/services/query/notifications/notifications.api";
+import NotificationCard from "./components/notification-card";
 
 const Notifications = () => {
   const { data: actions, isLoading } = useActions();

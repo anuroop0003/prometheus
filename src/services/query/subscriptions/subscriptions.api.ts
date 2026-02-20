@@ -8,12 +8,12 @@ import type {
 export const useConnectTool = () => {
   return useMutation<ConnectToolResponse, Error, ConnectToolPayload>({
     mutationFn: async ({ provider, toolId }) => {
-      const response = await api.get(`/subscription/${provider}`, {
+      const { data } = await api.get(`/subscription/${provider}`, {
         params: {
           toolId: toolId,
         },
       });
-      return response.data;
+      return data;
     },
   });
 };

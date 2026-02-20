@@ -1,3 +1,5 @@
+import ErrorToaster from "@/components/toaster/error-toaster";
+import SuccessToaster from "@/components/toaster/success-toaster";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -51,13 +53,31 @@ const ConnectToolModal = ({
             if (event.data.type === "AUTH_SUCCESS") {
               queryClient.invalidateQueries({ queryKey: ["tools"] });
               if (popup) popup.close();
+              onOpenChange(false);
+              toast.custom(
+                () => (
+                  <SuccessToaster
+                    title="Tool Connected"
+                    description={`${tool.name} connected successfully!`}
+                  />
+                ),
+                { id: `tool-connect-success-${tool.id}` },
+              );
             }
           },
           { once: true },
         );
       }
     } catch (error) {
-      toast.error("Could not initiate authentication.");
+      toast.custom(
+        () => (
+          <ErrorToaster
+            title="Connection Failed"
+            description={`Failed to connect ${tool.name}. Please try again.`}
+          />
+        ),
+        { id: `tool-connect-error-${tool.id}` },
+      );
     }
   };
 

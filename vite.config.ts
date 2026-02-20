@@ -11,4 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    allowedHosts: ["clair-semidirect-enola.ngrok-free.dev"]
+  }
 })

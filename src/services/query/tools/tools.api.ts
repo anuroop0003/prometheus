@@ -6,8 +6,8 @@ export const useTools = () => {
   return useQuery<ToolsResponse>({
     queryKey: ["tools"],
     queryFn: async () => {
-      const response = await api.get("/tools/connected");
-      return response.data;
+      const { data } = await api.get("/tools/connected");
+      return data;
     },
     refetchOnWindowFocus: false,
   });

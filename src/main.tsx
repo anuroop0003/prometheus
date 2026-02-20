@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
         <Toaster
           position="top-center"
           toastOptions={{
-            className: "p-0! border-none! [&>div]:w-full",
+            className: "p-0! border-none! [&>div]:w-full bg-white!",
           }}
         />
       </QueryClientProvider>

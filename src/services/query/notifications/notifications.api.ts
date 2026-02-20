@@ -6,8 +6,8 @@ export const useActions = (filter?: { status?: string; type?: string }) => {
   return useQuery<Action[]>({
     queryKey: ["actions", filter],
     queryFn: async () => {
-      const response = await api.get("/actions", { params: filter });
-      return response.data;
+      const { data } = await api.get("/actions", { params: filter });
+      return data;
     },
   });
 };
@@ -16,9 +16,12 @@ export const useUpdateActionStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation<Action, Error, UpdateActionStatusPayload>({
-    mutationFn: async ({ id, status }) => {
-      const response = await api.post(`/actions/${id}/status`, { status });
-      return response.data;
+    mutationFn: async ({ id, status, payload }) => {
+      const { data } = await api.post(`/actions/${id}/status`, {
+        status,
+        payload,
+      });
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["actions"] });

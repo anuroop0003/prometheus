@@ -1,21 +1,51 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { PackageOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { PackageOpen, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const EmptyToolState = () => {
+const EmptyToolState = ({
+  isPersonaCreated = false,
+}: {
+  isPersonaCreated: boolean;
+}) => {
+  const navigate = useNavigate();
+
   return (
-    <Card className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col border-dashed border-primary shadow-none">
-      <CardHeader className="flex items-center justify-center">
-        <div className="rounded-full bg-muted p-6">
-          <PackageOpen className="size-10 text-muted-foreground" />
-        </div>
+    <Card className="flex flex-col items-center border-dashed border-2 border-slate-200 shadow-none py-12 bg-slate-50/50">
+      <CardHeader className="flex items-center justify-center size-20 rounded-full bg-white shadow-sm ring-1 ring-slate-200">
+        <CardTitle>
+          <PackageOpen className="size-10 text-slate-400" />
+        </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-2 text-center">
-        <h3 className="font-semibold text-foreground">Empty Category</h3>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          There aren't any tools here yet. Be the first to add one!
+      <CardContent className="space-y-2 text-center max-w-lg">
+        <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+          {isPersonaCreated ? "No Tools Found" : "No Persona Found"}
+        </h3>
+        <p className="text-sm leading-relaxed text-slate-500 max-w-xl mx-auto">
+          {isPersonaCreated
+            ? "Your persona is active, but you haven't added any tools. Connect your verified stack to increase your reliability score."
+            : "You haven't configured your professional persona yet. Define your role and expertise to get started."}
         </p>
       </CardContent>
+
+      {!isPersonaCreated && (
+        <CardFooter>
+          <Button
+            onClick={() => navigate("/persona")}
+            className="cursor-pointer"
+          >
+            <Plus />
+            Create Your Persona
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

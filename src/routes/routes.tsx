@@ -2,7 +2,7 @@ import Layout from "@/components/layout";
 import Analytics from "@/pages/analytics";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { PrivateRoute, PublicRoute } from "./guards";
-import { Home, Login, Notifications } from "./lazy-pages";
+import { Home, Login, Notifications, Persona } from "./lazy-pages";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +36,10 @@ export const router = createBrowserRouter([
           {
             path: "notifications",
             element: <Notifications />,
+          },
+          {
+            path: "persona",
+            element: <Persona />,
           },
         ],
       },

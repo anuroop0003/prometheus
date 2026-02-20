@@ -1,9 +1,14 @@
+import { useUserProfile } from "@/services/query/login/login.api";
 import { useTools } from "@/services/query/tools/tools.api";
+import EmptyToolState from "./components/empty-tool-state";
 import ToolSection from "./components/tool-section";
 import { ToolSectionSkeleton } from "./components/tool-section-skeleton";
 
 const Home = () => {
   const { data, isLoading } = useTools();
+  const { data: profile } = useUserProfile();
+
+  const isPersonaCreated = profile?.user?.isPersonaCreated ?? false;
 
   const allTools = data?.tools || [];
   const connectedTools = allTools.filter((tool) => tool.status === "connected");
@@ -22,12 +27,14 @@ const Home = () => {
 
   return (
     <div className="space-y-12">
-      {connectedTools.length > 0 && (
+      {connectedTools.length > 0 ? (
         <ToolSection
           title="Connected Tools"
           description="Tools that are currently active and linked to your workflows."
           tools={connectedTools}
         />
+      ) : (
+        <EmptyToolState isPersonaCreated={isPersonaCreated} />
       )}
 
       {availableTools.length > 0 && (

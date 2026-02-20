@@ -26,4 +26,5 @@ export interface Action {
 export interface UpdateActionStatusPayload {
   id: string;
   status: "approved" | "declined";
+  payload?: any;
 }
