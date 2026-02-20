@@ -2,11 +2,11 @@ import api from "@/services/instance/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Action, UpdateActionStatusPayload } from "./notifications.types";
 
-export const useActions = (filter?: { status?: string; type?: string }) => {
+export const useActions = () => {
   return useQuery<Action[]>({
-    queryKey: ["actions", filter],
+    queryKey: ["actions"],
     queryFn: async () => {
-      const { data } = await api.get("/actions", { params: filter });
+      const { data } = await api.get("/actions");
       return data;
     },
   });
@@ -30,12 +30,17 @@ export const useUpdateActionStatus = () => {
 };
 
 export const useEnhanceAction = () => {
-  return useMutation<Action, Error, { id: string; prompt: string }>({
-    mutationFn: async ({ id, prompt }) => {
-      const { data } = await api.post(`/actions/${id}/enhance`, {
-        prompt,
+  const queryClient = useQueryClient();
+
+  return useMutation<Action, Error, { id: string; description: string }>({
+    mutationFn: async ({ id, description }) => {
+      const { data } = await api.post(`/enhance/${id}`, {
+        description,
       });
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
     },
   });
 };

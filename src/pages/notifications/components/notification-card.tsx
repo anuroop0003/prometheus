@@ -259,6 +259,7 @@ const NotificationCard = ({
 
       <EnhanceActionSheet
         actionId={id}
+        type={type}
         isOpen={isEnhanceOpen}
         onOpenChange={setIsEnhanceOpen}
         originalPayload={payload}

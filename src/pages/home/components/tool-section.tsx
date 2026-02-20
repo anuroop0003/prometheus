@@ -7,9 +7,15 @@ interface ToolSectionProps {
   title: string;
   description: string;
   tools: any[];
+  extraHeader?: React.ReactNode;
 }
 
-const ToolSection = ({ title, description, tools }: ToolSectionProps) => {
+const ToolSection = ({
+  title,
+  description,
+  tools,
+  extraHeader,
+}: ToolSectionProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const hasTools = tools.length > 0;
 
@@ -30,19 +36,22 @@ const ToolSection = ({ title, description, tools }: ToolSectionProps) => {
             {description}
           </p>
         </div>
-        {hasTools && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-xs font-semibold text-slate-400 hover:text-slate-800 transition-colors flex items-center gap-1 cursor-pointer"
-          >
-            {isExpanded ? "View less" : "View more"}
-            {isExpanded ? (
-              <ChevronUp className="size-3" />
-            ) : (
-              <ArrowRight className="size-3" />
-            )}
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          {extraHeader}
+          {hasTools && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-xs font-semibold text-slate-400 hover:text-slate-800 transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              {isExpanded ? "View less" : "View more"}
+              {isExpanded ? (
+                <ChevronUp className="size-3" />
+              ) : (
+                <ArrowRight className="size-3" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       <div

@@ -4,6 +4,41 @@ interface PayloadViewerProps {
   payload: any;
 }
 
+const isUnixTimestamp = (value: number) => {
+  return value > 1e9;
+};
+
+const formatValue = (key: string, value: any) => {
+  if (value == null) return "—";
+
+  const lowerKey = key.toLowerCase();
+
+  if (typeof value === "object") {
+    return "JSON Object";
+  }
+  if (typeof value === "number" && isUnixTimestamp(value)) {
+    const date =
+      value.toString().length === 10 ? new Date(value * 1000) : new Date(value);
+
+    return date.toLocaleString();
+  }
+
+  if (lowerKey.includes("time") || lowerKey.includes("timestamp")) {
+    return new Date(value).toLocaleTimeString();
+  }
+
+  if (
+    lowerKey.includes("date") ||
+    lowerKey.includes("dob") ||
+    lowerKey.includes("created") ||
+    lowerKey.includes("updated")
+  ) {
+    return new Date(value).toLocaleDateString();
+  }
+
+  return String(value).replace(/_/g, " ");
+};
+
 const PayloadViewer = ({ payload }: PayloadViewerProps) => {
   if (!payload || Object.keys(payload).length === 0) return null;
 
@@ -20,15 +55,14 @@ const PayloadViewer = ({ payload }: PayloadViewerProps) => {
         {Object.entries(payload).map(([key, value]) => (
           <div
             key={key}
-            className="flex flex-col gap-1.5 rounded-none border-2 border-slate-200 bg-slate-50 px-4 py-3 hover:bg-slate-100 transition-colors"
+            className="flex flex-col gap-1.5 border-2 border-slate-200 bg-slate-50 px-4 py-3 hover:bg-slate-100 transition-colors"
           >
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
               {key.replace(/_/g, " ")}
             </span>
-            <span className="text-sm font-bold tracking-tight text-slate-900 break-words capitalize">
-              {typeof value === "object"
-                ? "JSON Object"
-                : String(value).replace(/_/g, " ")}
+
+            <span className="text-sm font-bold tracking-tight text-slate-900 break-words">
+              {formatValue(key, value)}
             </span>
           </div>
         ))}

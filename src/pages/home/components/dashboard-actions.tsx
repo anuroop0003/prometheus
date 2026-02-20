@@ -6,7 +6,7 @@ import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const DashboardActions = () => {
-  const { data: actions, isLoading } = useActions({ status: "pending" });
+  const { data: actions, isLoading } = useActions();
   const navigate = useNavigate();
 
   const pendingActions = actions?.slice(0, 5) || [];
