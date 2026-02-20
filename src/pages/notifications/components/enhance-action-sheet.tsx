@@ -75,6 +75,8 @@ const EnhanceActionSheet = ({
         );
       }
     } catch (error) {
+      console.log("errrprrr", error);
+
       toast.custom(
         () => (
           <ErrorToaster
