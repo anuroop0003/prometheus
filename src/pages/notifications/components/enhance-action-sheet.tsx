@@ -61,8 +61,8 @@ const EnhanceActionSheet = ({
         description: enhancePrompt,
       });
 
-      if (response && response.payload) {
-        form.reset(response.payload);
+      if (response && response.enhacement.enhancedPayload) {
+        form.reset(response.enhacement.enhancedPayload);
         setEnhancePrompt("");
         toast.custom(
           () => (

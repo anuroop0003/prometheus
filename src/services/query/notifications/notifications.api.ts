@@ -32,7 +32,11 @@ export const useUpdateActionStatus = () => {
 export const useEnhanceAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Action, Error, { id: string; description: string }>({
+  return useMutation<
+    { message: string; enhacement: { enhancedPayload: Action } },
+    Error,
+    { id: string; description: string }
+  >({
     mutationFn: async ({ id, description }) => {
       const { data } = await api.post(`/actions/enhance/${id}`, {
         description,
