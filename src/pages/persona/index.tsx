@@ -13,12 +13,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { PersonaForm } from "./components/persona-form";
 import { PersonaHeader } from "./components/persona-header";
 import { PersonaPreview } from "./components/persona-preview";
 
 export default function PersonaPage() {
+  const navigate = useNavigate();
   const { data: profile } = useUserProfile();
   const { data: personaData } = useGetPersona();
   const { mutateAsync: createPersona, isPending } = useCreatePersona();
@@ -55,6 +57,7 @@ export default function PersonaPage() {
       ),
       success: () => {
         methods.reset(data);
+        navigate("/home");
         return (
           <SuccessToaster
             title="Persona Saved"
