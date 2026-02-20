@@ -28,3 +28,8 @@ export interface UpdateActionStatusPayload {
   status: "approved" | "declined";
   payload?: any;
 }
+
+export interface EnhanceActionPayload {
+  id: string;
+  prompt: string;
+}

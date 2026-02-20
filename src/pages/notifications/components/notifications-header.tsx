@@ -1,13 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { Workflow } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface PersonaHeaderProps {
-  isPending: boolean;
-  onSubmit: () => void;
-}
-
-export function PersonaHeader({ isPending, onSubmit }: PersonaHeaderProps) {
+export function NotificationsHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b-2 border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
@@ -19,15 +13,6 @@ export function PersonaHeader({ isPending, onSubmit }: PersonaHeaderProps) {
             Prometheus
           </span>
         </Link>
-
-        <Button
-          onClick={onSubmit}
-          loading={isPending}
-          disabled={isPending}
-          className="min-w-36 cursor-pointer rounded-none font-bold tracking-wider uppercase"
-        >
-          Save Changes
-        </Button>
       </div>
     </header>
   );

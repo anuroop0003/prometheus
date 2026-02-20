@@ -1,51 +1,22 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { PackageOpen, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PackageOpen } from "lucide-react";
 
-const EmptyToolState = ({
-  isPersonaCreated = false,
-}: {
-  isPersonaCreated: boolean;
-}) => {
-  const navigate = useNavigate();
-
+const EmptyToolState = () => {
   return (
-    <Card className="flex flex-col items-center border-dashed border-2 border-slate-200 shadow-none py-12 bg-slate-50/50">
-      <CardHeader className="flex items-center justify-center size-20 rounded-full bg-white shadow-sm ring-1 ring-slate-200">
-        <CardTitle>
-          <PackageOpen className="size-10 text-slate-400" />
-        </CardTitle>
+    <Card className="flex flex-col items-center border-dashed border-2 border-slate-200 shadow-none py-12 bg-slate-50/50 rounded-none h-full justify-center">
+      <CardHeader className="flex items-center justify-center size-16 bg-white shadow-sm border border-slate-200 mb-4 rounded-none p-0">
+        <PackageOpen className="size-8 text-slate-400" />
       </CardHeader>
 
-      <CardContent className="space-y-2 text-center max-w-lg">
-        <h3 className="text-xl font-bold text-slate-900 tracking-tight">
-          {isPersonaCreated ? "No Tools Found" : "No Persona Found"}
+      <CardContent className="space-y-2 text-center max-w-md pb-0">
+        <h3 className="text-sm font-bold text-slate-900 tracking-tight uppercase">
+          No Connected Tools
         </h3>
-        <p className="text-sm leading-relaxed text-slate-500 max-w-xl mx-auto">
-          {isPersonaCreated
-            ? "Your persona is active, but you haven't added any tools. Connect your verified stack to increase your reliability score."
-            : "You haven't configured your professional persona yet. Define your role and expertise to get started."}
+        <p className="text-xs font-medium leading-relaxed text-slate-500 max-w-sm mx-auto">
+          You haven't connected any tools yet. Add your verified stack from the
+          available tools below to empower Prometheus with more capabilities.
         </p>
       </CardContent>
-
-      {!isPersonaCreated && (
-        <CardFooter>
-          <Button
-            onClick={() => navigate("/persona")}
-            className="cursor-pointer"
-          >
-            <Plus />
-            Create Your Persona
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   );
 };

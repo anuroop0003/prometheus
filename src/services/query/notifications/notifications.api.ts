@@ -28,3 +28,14 @@ export const useUpdateActionStatus = () => {
     },
   });
 };
+
+export const useEnhanceAction = () => {
+  return useMutation<Action, Error, { id: string; prompt: string }>({
+    mutationFn: async ({ id, prompt }) => {
+      const { data } = await api.post(`/actions/${id}/enhance`, {
+        prompt,
+      });
+      return data;
+    },
+  });
+};

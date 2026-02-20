@@ -1,4 +1,3 @@
-import { NOTIFICATION_CARD_ICON_CONFIG } from "@/components/header/constant/notification-card-icon-config";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +21,7 @@ import {
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { NOTIFICATION_CARD_ICON_CONFIG } from "../constant/notification-card-icon-config";
 import EnhanceActionSheet from "./enhance-action-sheet";
 import PayloadViewer from "./payload-viewer";
 
@@ -80,10 +80,10 @@ const STATUS_CONFIG: Record<
 };
 
 const PRIORITY_CONFIG = {
-  high: "bg-red-500/10 text-red-700 border-red-200 animate-pulse",
-  medium: "bg-amber-500/10 text-amber-700 border-amber-200",
-  low: "bg-emerald-500/10 text-emerald-700 border-emerald-200",
-  ignore: "bg-slate-500/10 text-slate-600 border-slate-200",
+  high: "bg-red-50 text-red-700 border-red-200 animate-pulse",
+  medium: "bg-amber-50 text-amber-700 border-amber-200",
+  low: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  ignore: "bg-slate-50 text-slate-600 border-slate-200",
 };
 
 const NotificationCard = ({
@@ -124,44 +124,46 @@ const NotificationCard = ({
         <AccordionItem
           value={id}
           className={cn(
-            "border rounded-lg mb-2 overflow-hidden transition-all duration-200 bg-card",
+            "border-2 border-slate-200 rounded-none mb-3 overflow-hidden bg-white shadow-none",
             config.border,
-            "border-l-4",
+            "border-l-[6px]",
           )}
         >
-          <AccordionTrigger className="cursor-pointer px-4 py-4 hover:no-underline hover:bg-accent/30">
+          <AccordionTrigger className="cursor-pointer px-5 py-5 hover:no-underline hover:bg-slate-50 transition-colors">
             <div className="flex w-full items-start justify-between gap-4">
-              <div className="flex gap-6">
-                <div className="relative mt-1">
+              <div className="flex gap-4">
+                <div className="relative">
                   <img
                     src={NOTIFICATION_CARD_ICON_CONFIG[type]}
-                    className="size-8 bg-slate-100 p-1"
+                    className="size-10 bg-slate-100 p-1.5 border border-slate-200 rounded-none"
                     alt={type}
                   />
                   <div
                     className={cn(
-                      "absolute -bottom-1 -right-1 rounded-full bg-background p-0.5",
+                      "absolute -bottom-1.5 -right-1.5 rounded-none bg-white p-0.5 border border-slate-200",
                       config.color,
                     )}
                   >
                     <StatusIcon
                       className={cn(
-                        "size-3",
+                        "size-4",
                         status === "executing" && "animate-spin",
                       )}
+                      strokeWidth={2.5}
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3 text-left">
-                  <p className="text-sm font-semibold leading-none tracking-tight">
+                <div className="space-y-1.5 text-left ml-2">
+                  <p className="text-base font-extrabold leading-none tracking-tight text-slate-900">
                     {title ?? "Action Request"}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className={cn("font-medium", config.color)}>
-                      {config.badge}
-                    </span>
-                    <Separator orientation="vertical" className="h-3" />
+                  <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <span className={cn(config.color)}>{config.badge}</span>
+                    <Separator
+                      orientation="vertical"
+                      className="h-3 bg-slate-300"
+                    />
                     <span>
                       {new Date(createdAt).toLocaleDateString()} at{" "}
                       {new Date(createdAt).toLocaleTimeString([], {
@@ -176,29 +178,32 @@ const NotificationCard = ({
               <Badge
                 variant="outline"
                 className={cn(
-                  "text-[10px] font-bold shadow-sm",
+                  "text-[10px] font-bold uppercase tracking-wider shadow-none rounded-none border-2 px-2.5 py-1",
                   PRIORITY_CONFIG[priority],
                 )}
               >
-                {priority.toUpperCase()}
+                {priority}
               </Badge>
             </div>
           </AccordionTrigger>
 
-          <AccordionContent className="px-4 pb-4">
+          <AccordionContent className="px-5 pb-5">
             <div className="space-y-4 pt-2">
               {description && (
-                <div className="text-sm leading-relaxed text-foreground/80 bg-muted/30 p-3 rounded-md border">
+                <div className="text-xs bg-slate-50 p-4 border-2 border-slate-200 text-slate-700 font-semibold leading-relaxed">
                   <ReactMarkdown>{description}</ReactMarkdown>
                 </div>
               )}
 
               {reasoning && (
-                <div className="flex gap-2 text-xs bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-100 dark:border-blue-900/50">
-                  <Info className="size-4 text-blue-500 shrink-0" />
-                  <div className="italic text-muted-foreground">
-                    <span className="font-semibold text-blue-600 dark:text-blue-400 not-italic mr-1">
-                      Reasoning:
+                <div className="flex gap-3 text-xs bg-indigo-50/50 p-4 border-2 border-indigo-100 items-start">
+                  <Info
+                    className="size-4 text-indigo-500 shrink-0 mt-0.5"
+                    strokeWidth={2.5}
+                  />
+                  <div className="text-slate-600 font-medium leading-relaxed">
+                    <span className="font-bold text-indigo-700 uppercase tracking-widest mr-2 inline-block text-[10px]">
+                      Reasoning
                     </span>
                     {reasoning}
                   </div>
@@ -208,44 +213,41 @@ const NotificationCard = ({
               <PayloadViewer payload={payload} />
 
               {status === "pending" && (
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t-2 border-slate-100 mt-4">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="mr-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-950/50"
+                    className="sm:mr-auto rounded-none border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 font-bold uppercase tracking-wider text-xs h-10 px-5 shadow-none"
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsEnhanceOpen(true);
                     }}
                     disabled={isPending}
                   >
-                    <Sparkles className="mr-2 size-3" />
+                    <Sparkles className="mr-2 size-4" strokeWidth={2.5} />
                     Enhance
                   </Button>
 
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    variant="outline"
+                    className="rounded-none border-2 border-slate-200 text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-700 font-bold uppercase tracking-wider text-xs h-10 px-6 shadow-none transition-colors"
                     onClick={() => onAction("declined")}
                     disabled={isPending}
                   >
                     {isPending ? (
-                      <Loader2 className="mr-2 size-3 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                     ) : null}
                     Decline
                   </Button>
 
                   <Button
-                    size="sm"
-                    className="bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95"
+                    className="rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-xs h-10 px-8 shadow-none transition-colors"
                     onClick={() => onAction("approved")}
                     disabled={isPending}
                   >
                     {isPending ? (
-                      <Loader2 className="mr-2 size-3 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                     ) : (
-                      "Approve Action"
+                      "Approve"
                     )}
                   </Button>
                 </div>
@@ -256,6 +258,7 @@ const NotificationCard = ({
       </Accordion>
 
       <EnhanceActionSheet
+        actionId={id}
         isOpen={isEnhanceOpen}
         onOpenChange={setIsEnhanceOpen}
         originalPayload={payload}
