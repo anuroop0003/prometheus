@@ -8,7 +8,7 @@ import ToolSection from "./components/tool-section";
 import { ToolSectionSkeleton } from "./components/tool-section-skeleton";
 
 const Home = () => {
-  const [showActionTools, setShowActionTools] = useState(false);
+  const [showActionTools, setShowActionTools] = useState<boolean>(false);
   const { data, isLoading } = useTools();
   const { data: profile } = useUserProfile();
 
@@ -21,7 +21,7 @@ const Home = () => {
   const availableTools = allTools.filter(
     (tool) =>
       (tool.status === "available" || tool.status === "coming_soon") &&
-      tool.category === (showActionTools ? "action" : "communication"),
+      tool.categories === (showActionTools ? "actions" : "communication"),
   );
 
   if (isLoading) {
@@ -41,7 +41,7 @@ const Home = () => {
         isPersonaCreated={isPersonaCreated}
       />
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-5">
         <div className="lg:w-1/3">
           <DashboardActions />
         </div>
@@ -62,9 +62,10 @@ const Home = () => {
                 <span
                   className={`text-[10px] font-bold uppercase tracking-wider ${!showActionTools ? "text-slate-900" : "text-slate-400"}`}
                 >
-                  Comms
+                  Communication
                 </span>
                 <Switch
+                  className="cursor-pointer"
                   checked={showActionTools}
                   onCheckedChange={setShowActionTools}
                 />

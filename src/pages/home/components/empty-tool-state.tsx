@@ -3,7 +3,7 @@ import { PackageOpen } from "lucide-react";
 
 const EmptyToolState = () => {
   return (
-    <Card className="flex flex-col items-center border-dashed border-2 border-slate-200 shadow-none py-12 bg-slate-50/50 rounded-none h-full justify-center">
+    <Card className="w-full flex flex-col items-center border-dashed border-2 border-slate-200 shadow-none py-12 bg-slate-50/50 rounded-none h-full justify-center">
       <CardHeader className="flex items-center justify-center size-16 bg-white shadow-sm border border-slate-200 mb-4 rounded-none p-0">
         <PackageOpen className="size-8 text-slate-400" />
       </CardHeader>

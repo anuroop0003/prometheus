@@ -25,7 +25,7 @@ const ToolCard = ({ tool }: ToolCardProps) => {
     <>
       <Card
         className={cn(
-          "py-2 rounded-none border-2 border-slate-200 bg-white shadow-none transition-all flex flex-col h-full min-h-[160px]",
+          "py-2 rounded-none border-2 border-slate-200 bg-white shadow-none transition-all flex flex-col h-full w-full min-h-[160px]",
           tool.status !== "coming_soon" && "hover:border-slate-300",
         )}
       >
@@ -55,11 +55,11 @@ const ToolCard = ({ tool }: ToolCardProps) => {
         </CardHeader>
 
         <CardContent className="px-4 py-2 flex-1 flex flex-col">
-          <p className="text-[11px] font-semibold text-slate-500 leading-relaxed min-h-[3em] mb-3 flex-1">
+          <p className="text-[11px] font-semibold text-slate-500 leading-relaxed min-h-[3em] flex-1 mb-3">
             {tool.description}
           </p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 min-h-[3.5em] items-start">
             {tool.services.map((service) => (
               <Badge
                 key={service}

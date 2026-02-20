@@ -67,8 +67,8 @@ const ToolSection = ({
               key={tool.id}
               className={
                 isExpanded
-                  ? "h-full"
-                  : "min-w-full md:min-w-[calc(50%-0.5rem)] xl:min-w-[calc(33.333%-11px)] snap-start h-full"
+                  ? "flex h-full"
+                  : "flex h-full min-w-full md:min-w-[calc(50%-0.5rem)] xl:min-w-[calc(33.333%-11px)] snap-start"
               }
             >
               <ToolCard tool={tool} />
