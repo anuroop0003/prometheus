@@ -106,11 +106,14 @@ const EnhanceActionSheet = ({
   });
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => {
-      onOpenChange(open);
-      form.reset(originalPayload || {});
-      setEnhancePrompt("");
-    }}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        onOpenChange(open);
+        form.reset(originalPayload || {});
+        setEnhancePrompt("");
+      }}
+    >
       <SheetContent className="w-xl sm:max-w-xl rounded-none border-l-2 border-slate-200 bg-white flex flex-col p-0 gap-0">
         <div className="shrink-0">
           <SheetHeader className="p-6">
