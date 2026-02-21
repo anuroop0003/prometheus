@@ -1,3 +1,6 @@
+import ErrorToaster from "@/components/toaster/error-toaster";
+import PendingToaster from "@/components/toaster/pending-toaster";
+import SuccessToaster from "@/components/toaster/success-toaster";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,8 +11,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useDisconnectTool } from "@/services/query/tools/tools.api";
 import type { Tool } from "@/services/query/tools/tools.types";
 import { useState } from "react";
+import { toast } from "sonner";
 import { TOOL_STYLE_CONFIG } from "../constant/tool-style.config";
 import ConnectToolModal from "./connect-tool-modal";
 
@@ -20,6 +25,32 @@ interface ToolCardProps {
 const ToolCard = ({ tool }: ToolCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const statusConfig = TOOL_STYLE_CONFIG[tool.status];
+  const { mutateAsync: disconnectTool, isPending: isDisconnecting } =
+    useDisconnectTool();
+
+  const handleDisconnect = async () => {
+    toast.promise(disconnectTool(tool.id), {
+      icon: null,
+      loading: (
+        <PendingToaster
+          title="Disconnecting Tool"
+          description={`Please wait while ${tool.name} is being disconnected...`}
+        />
+      ),
+      success: () => (
+        <SuccessToaster
+          title="Tool Disconnected"
+          description={`${tool.name} has been disconnected successfully.`}
+        />
+      ),
+      error: () => (
+        <ErrorToaster
+          title="Disconnection Failed"
+          description={`Failed to disconnect ${tool.name}. Please try again.`}
+        />
+      ),
+    });
+  };
 
   return (
     <>
@@ -76,6 +107,9 @@ const ToolCard = ({ tool }: ToolCardProps) => {
           {tool.status === "connected" ? (
             <Button
               variant="outline"
+              onClick={handleDisconnect}
+              disabled={isDisconnecting}
+              loading={isDisconnecting}
               className="w-full rounded-none border-2 border-red-300 text-red-600 bg-red-50 hover:bg-red-100 hover:border-red-400 font-bold text-xs h-9 cursor-pointer transition-all shadow-none"
             >
               <statusConfig.Icon className="mr-1.5 size-4" strokeWidth={2.5} />

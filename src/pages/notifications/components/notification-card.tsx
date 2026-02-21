@@ -208,6 +208,16 @@ const NotificationCard = ({
                         minute: "2-digit",
                       })}
                     </span>
+                    <Separator
+                      orientation="vertical"
+                      className="h-3 bg-slate-300"
+                    />
+                    <span className="flex items-center gap-1">
+                      <span className="text-slate-400">Source:</span>
+                      <span className="text-indigo-600 truncate max-w-[100px]">
+                        {source}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>

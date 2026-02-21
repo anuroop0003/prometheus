@@ -22,10 +22,9 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     console.error("Registry API Error:", error);
 
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 404) {
       localStorage.clear();
       window.location.href = "/login";
-      console.warn("Unauthorized Registry request");
     }
 
     return Promise.reject(error);

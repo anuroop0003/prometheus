@@ -9,7 +9,9 @@ export const DashboardActions = () => {
   const { data: actions, isLoading } = useActions();
   const navigate = useNavigate();
 
-  const pendingActions = actions?.slice(0, 5) || [];
+  const allPending = actions?.filter((a) => a.status === "pending") || [];
+  const totalPending = allPending.length;
+  const pendingActions = allPending.slice(0, 5);
 
   return (
     <Card className="rounded-none border-2 border-slate-200 bg-white shadow-none h-full p-6 flex flex-col">
@@ -23,7 +25,7 @@ export const DashboardActions = () => {
           </p>
         </div>
         <div className="flex items-center justify-center size-6 bg-slate-900 text-white rounded-none text-xs font-bold">
-          {pendingActions.length}
+          {totalPending}
         </div>
       </div>
 
