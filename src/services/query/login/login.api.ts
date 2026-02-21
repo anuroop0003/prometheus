@@ -16,5 +16,6 @@ export const useUserProfile = () => {
       const { data } = await api.get("/user/profile");
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 };

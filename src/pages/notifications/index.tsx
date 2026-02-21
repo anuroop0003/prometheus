@@ -1,4 +1,5 @@
 import { useActions } from "@/services/query/notifications/notifications.api";
+import EmptyNotificationState from "./components/empty-notification-state";
 import NotificationCard from "./components/notification-card";
 import { NotificationsHeader } from "./components/notifications-header";
 
@@ -31,9 +32,13 @@ const Notifications = () => {
           </p>
         </header>
 
-        {actions?.map((action) => (
-          <NotificationCard key={action._id} {...action} id={action._id} />
-        ))}
+        {actions && actions.length > 0 ? (
+          actions.map((action) => (
+            <NotificationCard key={action._id} {...action} id={action._id} />
+          ))
+        ) : (
+          <EmptyNotificationState />
+        )}
       </section>
     </div>
   );

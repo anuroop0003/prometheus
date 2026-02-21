@@ -1,5 +1,6 @@
 import { Switch } from "@/components/ui/switch";
 import { useUserProfile } from "@/services/query/login/login.api";
+import { useGetPersona } from "@/services/query/persona/persona.api";
 import { useTools } from "@/services/query/tools/tools.api";
 import { useState } from "react";
 import { DashboardActions } from "./components/dashboard-actions";
@@ -9,8 +10,9 @@ import { ToolSectionSkeleton } from "./components/tool-section-skeleton";
 
 const Home = () => {
   const [showActionTools, setShowActionTools] = useState<boolean>(false);
-  const { data, isLoading } = useTools();
-  const { data: profile } = useUserProfile();
+  const { data, isLoading: isToolsLoading } = useTools();
+  const { data: profile, isLoading: isProfileLoading } = useUserProfile();
+  const { data: personaData, isLoading: isPersonaLoading } = useGetPersona();
 
   const isPersonaCreated = profile?.user?.isPersonaCreated ?? false;
   const userName = profile?.user?.name || "";
@@ -24,7 +26,7 @@ const Home = () => {
       tool.categories === (showActionTools ? "actions" : "communication"),
   );
 
-  if (isLoading) {
+  if (isToolsLoading || isProfileLoading || isPersonaLoading) {
     return (
       <div className="space-y-12">
         <ToolSectionSkeleton />
@@ -39,6 +41,9 @@ const Home = () => {
         userName={userName}
         userEmail={userEmail}
         isPersonaCreated={isPersonaCreated}
+        role={personaData?.persona?.role || ""}
+        company={personaData?.persona?.company || ""}
+        projectKeywords={personaData?.persona?.projectKeywords || []}
       />
 
       <div className="flex flex-col lg:flex-row gap-5">

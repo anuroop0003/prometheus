@@ -1,6 +1,6 @@
 import api from "@/services/instance/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Action, UpdateActionStatusPayload } from "./notifications.types";
+import type { Action } from "./notifications.types";
 
 export const useActions = () => {
   return useQuery<Action[]>({
@@ -9,17 +9,32 @@ export const useActions = () => {
       const { data } = await api.get("/actions");
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 };
 
-export const useUpdateActionStatus = () => {
+export const useApproveAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Action, Error, UpdateActionStatusPayload>({
-    mutationFn: async ({ id, status, payload }) => {
-      const { data } = await api.post(`/actions/${id}/status`, {
-        status,
-        payload,
+  return useMutation<Action, Error, { payload?: any }>({
+    mutationFn: async (payloadData) => {
+      const { data } = await api.post(`/actions/approve`, payloadData);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
+    },
+  });
+};
+
+export const useDeclineAction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Action, Error, { action_id: string; remark: string }>({
+    mutationFn: async ({ action_id, remark }) => {
+      const { data } = await api.post(`/actions/delete`, {
+        action_id,
+        remark,
       });
       return data;
     },
@@ -33,7 +48,7 @@ export const useEnhanceAction = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    { message: string; enhacement: { enhancedPayload: Action } },
+    { message: string; action: Action },
     Error,
     { id: string; description: string }
   >({
@@ -41,6 +56,20 @@ export const useEnhanceAction = () => {
       const { data } = await api.post(`/actions/enhance/${id}`, {
         description,
       });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
+    },
+  });
+};
+
+export const useUpdateActionPayload = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Action, Error, { id: string; payload: any }>({
+    mutationFn: async ({ id, payload }) => {
+      const { data } = await api.post(`/actions/${id}`, { payload });
       return data;
     },
     onSuccess: () => {

@@ -1,3 +1,6 @@
+import ErrorToaster from "@/components/toaster/error-toaster";
+import PendingToaster from "@/components/toaster/pending-toaster";
+import SuccessToaster from "@/components/toaster/success-toaster";
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useUpdateActionStatus } from "@/services/query/notifications/notifications.api";
+import { useApproveAction } from "@/services/query/notifications/notifications.api";
 import type { ActionStatus } from "@/services/query/notifications/notifications.types";
 import {
   CheckCircle2,
@@ -22,11 +25,13 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { NOTIFICATION_CARD_ICON_CONFIG } from "../constant/notification-card-icon-config";
+import DeclineActionModal from "./decline-action-modal";
 import EnhanceActionSheet from "./enhance-action-sheet";
 import PayloadViewer from "./payload-viewer";
 
 interface Props {
   id: string;
+  source: string;
   type: string;
   title?: string;
   description?: string;
@@ -88,6 +93,7 @@ const PRIORITY_CONFIG = {
 
 const NotificationCard = ({
   id,
+  source,
   title,
   type,
   description,
@@ -96,26 +102,60 @@ const NotificationCard = ({
   payload,
   reasoning,
   createdAt,
-}: Props) => {
-  const { mutateAsync, isPending } = useUpdateActionStatus();
+  ...rest
+}: Props & { [key: string]: any }) => {
+  const fullAction = {
+    id,
+    source,
+    title,
+    type,
+    description,
+    status,
+    priority,
+    payload,
+    reasoning,
+    createdAt,
+    ...rest,
+  };
+
+  const { mutateAsync: approveAction, isPending } = useApproveAction();
+
   const config = STATUS_CONFIG[status];
   const StatusIcon = config.icon;
 
-  const [isEnhanceOpen, setIsEnhanceOpen] = useState(false);
+  const [isEnhanceOpen, setIsEnhanceOpen] = useState<boolean>(false);
+  const [isDeclineOpen, setIsDeclineOpen] = useState<boolean>(false);
 
   const onAction = async (
     nextStatus: "approved" | "declined",
     overridePayload?: any,
   ) => {
-    toast.promise(
-      mutateAsync({ id, status: nextStatus, payload: overridePayload }),
-      {
-        loading: "Updating status...",
-        success: `Action ${nextStatus} successfully`,
-        error: "Failed to update action",
-      },
-    );
-    if (isEnhanceOpen) setIsEnhanceOpen(false);
+    if (nextStatus === "approved") {
+      toast.promise(approveAction(overridePayload || fullAction), {
+        icon: null,
+        loading: (
+          <PendingToaster
+            title="Approving Action"
+            description="Please wait while the action is processed."
+          />
+        ),
+        success: () => {
+          setIsEnhanceOpen(false);
+          return (
+            <SuccessToaster
+              title="Action Approved"
+              description="The action has been approved successfully."
+            />
+          );
+        },
+        error: () => (
+          <ErrorToaster
+            title="Approval Failed"
+            description="There was a problem approving this action."
+          />
+        ),
+      });
+    }
   };
 
   return (
@@ -213,7 +253,7 @@ const NotificationCard = ({
               <PayloadViewer payload={payload} />
 
               {status === "pending" && (
-                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t-2 border-slate-100 mt-4">
+                <div className="flex flex-col sm:flex-row justify-end gap-6 pt-4 border-t-2 border-slate-100 mt-4">
                   <Button
                     variant="outline"
                     className="sm:mr-auto rounded-none border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 font-bold uppercase tracking-wider text-xs h-10 px-5 shadow-none"
@@ -230,12 +270,9 @@ const NotificationCard = ({
                   <Button
                     variant="outline"
                     className="rounded-none border-2 border-slate-200 text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-700 font-bold uppercase tracking-wider text-xs h-10 px-6 shadow-none transition-colors"
-                    onClick={() => onAction("declined")}
+                    onClick={() => setIsDeclineOpen(true)}
                     disabled={isPending}
                   >
-                    {isPending ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : null}
                     Decline
                   </Button>
 
@@ -243,12 +280,9 @@ const NotificationCard = ({
                     className="rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-xs h-10 px-8 shadow-none transition-colors"
                     onClick={() => onAction("approved")}
                     disabled={isPending}
+                    loading={isPending}
                   >
-                    {isPending ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                    ) : (
-                      "Approve"
-                    )}
+                    Approve
                   </Button>
                 </div>
               )}
@@ -262,9 +296,15 @@ const NotificationCard = ({
         type={type}
         isOpen={isEnhanceOpen}
         onOpenChange={setIsEnhanceOpen}
-        originalPayload={payload}
+        originalAction={fullAction}
         isPending={isPending}
-        onSave={(editedPayload) => onAction("approved", editedPayload)}
+        onSave={(editedAction) => onAction("approved", editedAction)}
+      />
+
+      <DeclineActionModal
+        id={id}
+        isOpen={isDeclineOpen}
+        onOpenChange={setIsDeclineOpen}
       />
     </>
   );

@@ -12,10 +12,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { TimePicker } from "@/components/ui/time-picker";
-import { useEnhanceAction } from "@/services/query/notifications/notifications.api";
-import { Loader2, Sparkles } from "lucide-react";
+import {
+  useEnhanceAction,
+  useUpdateActionPayload,
+} from "@/services/query/notifications/notifications.api";
+import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -25,7 +29,7 @@ interface EnhanceActionSheetProps {
   type: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  originalPayload: Record<string, any>;
+  originalAction: Record<string, any>;
   isPending: boolean;
   onSave: (editedPayload: any) => void;
   actionId: string;
@@ -35,7 +39,7 @@ const EnhanceActionSheet = ({
   type,
   isOpen,
   onOpenChange,
-  originalPayload,
+  originalAction,
   isPending,
   onSave,
   actionId,
@@ -43,14 +47,16 @@ const EnhanceActionSheet = ({
   const [enhancePrompt, setEnhancePrompt] = useState<string>("");
   const { mutateAsync: enhanceAction, isPending: isEnhancing } =
     useEnhanceAction();
+  const { mutateAsync: updateActionPayload, isPending: isUpdating } =
+    useUpdateActionPayload();
 
   const form = useForm({
-    values: originalPayload || {},
+    values: originalAction?.payload || {},
   });
 
   useEffect(() => {
-    form.reset(originalPayload || {});
-  }, [originalPayload, isOpen, form]);
+    form.reset(originalAction?.payload || {});
+  }, [originalAction, isOpen, form]);
 
   const handleEnhance = async () => {
     if (!enhancePrompt.trim()) return;
@@ -61,10 +67,8 @@ const EnhanceActionSheet = ({
         description: enhancePrompt,
       });
 
-      if (response && response.enhacement.enhancedPayload) {
-        console.log("responseresponseresponse", response);
-
-        form.reset(response.enhacement.enhancedPayload);
+      if (response && response.action.payload) {
+        form.reset(response.action.payload);
         setEnhancePrompt("");
         toast.custom(
           () => (
@@ -73,12 +77,10 @@ const EnhanceActionSheet = ({
               description="Payload has been enhanced successfully."
             />
           ),
-          { id: `enhance-success-${actionId}` },
+          { id: `enhance-success-${actionId}`, unstyled: true },
         );
       }
     } catch (error) {
-      console.log("errrprrr", error);
-
       toast.custom(
         () => (
           <ErrorToaster
@@ -86,17 +88,17 @@ const EnhanceActionSheet = ({
             description="Failed to enhance payload. Please try again."
           />
         ),
-        { id: `enhance-error-${actionId}` },
+        { id: `enhance-error-${actionId}`, unstyled: true },
       );
     }
   };
 
-  const onSubmit = form.handleSubmit((data) => {
+  const onSubmit = form.handleSubmit(async (data) => {
     // Attempt to parse stringified JSON back if applicable
     const parsedData = { ...data };
     Object.keys(parsedData).forEach((key) => {
       if (
-        typeof originalPayload?.[key] === "object" &&
+        typeof originalAction?.payload?.[key] === "object" &&
         typeof parsedData[key] === "string"
       ) {
         try {
@@ -106,7 +108,23 @@ const EnhanceActionSheet = ({
         }
       }
     });
-    onSave(parsedData);
+
+    const fullAction = { ...originalAction, payload: parsedData };
+
+    try {
+      await updateActionPayload({ id: actionId, payload: fullAction.payload });
+      onSave(fullAction);
+    } catch {
+      toast.custom(
+        () => (
+          <ErrorToaster
+            title="Update Failed"
+            description="Failed to save the updated action payload."
+          />
+        ),
+        { id: `update-error-${actionId}`, unstyled: true },
+      );
+    }
   });
 
   return (
@@ -114,7 +132,7 @@ const EnhanceActionSheet = ({
       open={isOpen}
       onOpenChange={(open) => {
         onOpenChange(open);
-        form.reset(originalPayload || {});
+        form.reset(originalAction?.payload || {});
         setEnhancePrompt("");
       }}
     >
@@ -148,94 +166,113 @@ const EnhanceActionSheet = ({
             onSubmit={onSubmit}
             className="space-y-6 pb-6 pt-2"
           >
-            {Object.entries(originalPayload || {}).map(([key, value]) => {
-              if (key.toLowerCase() === "type") return null;
+            {Object.entries(originalAction?.payload || {}).map(
+              ([key, value]) => {
+                if (key.toLowerCase() === "type") return null;
 
-              const isLong =
-                String(value).length > 40 ||
-                key.toLowerCase().includes("body") ||
-                key.toLowerCase().includes("description") ||
-                typeof value === "object";
+                const isLong =
+                  String(value).length > 40 ||
+                  key.toLowerCase().includes("body") ||
+                  key.toLowerCase().includes("description") ||
+                  typeof value === "object";
 
-              const isDate =
-                key.toLowerCase().includes("date") &&
-                !key.toLowerCase().includes("time");
-              const isTime =
-                key.toLowerCase().includes("time") &&
-                !key.toLowerCase().includes("date");
+                const isDate =
+                  key.toLowerCase().includes("date") &&
+                  !key.toLowerCase().includes("time");
+                const isTime =
+                  key.toLowerCase().includes("time") &&
+                  !key.toLowerCase().includes("date");
+                const isBoolean = typeof value === "boolean";
 
-              return (
-                <div key={key} className="space-y-2">
-                  <Label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-700">
-                    {key.replace(/_/g, " ")}
-                  </Label>
+                return (
+                  <div key={key} className="space-y-2">
+                    <Label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-700">
+                      {key.replace(/_/g, " ")}
+                    </Label>
 
-                  <Controller
-                    control={form.control}
-                    name={key}
-                    render={({ field }) => {
-                      const stringValue =
-                        typeof field.value === "object"
-                          ? JSON.stringify(field.value, null, 2)
-                          : String(field.value ?? "");
+                    <Controller
+                      control={form.control}
+                      name={key}
+                      render={({ field }) => {
+                        const stringValue =
+                          typeof field.value === "object"
+                            ? JSON.stringify(field.value, null, 2)
+                            : String(field.value ?? "");
 
-                      if (isLong) {
+                        if (isLong) {
+                          return (
+                            <Textarea
+                              {...field}
+                              value={stringValue}
+                              className="min-h-[80px] font-mono text-sm rounded-none border border-slate-200 bg-white focus-visible:ring-0 focus-visible:border-indigo-500 transition-colors shadow-none p-3"
+                            />
+                          );
+                        }
+
+                        if (isBoolean) {
+                          return (
+                            <div className="flex h-10 items-center justify-between border border-slate-200 bg-white px-3 shadow-none">
+                              <span className="text-sm font-medium text-slate-500">
+                                {field.value ? "True" : "False"}
+                              </span>
+                              <Switch
+                                checked={Boolean(field.value)}
+                                onCheckedChange={field.onChange}
+                              />
+                            </div>
+                          );
+                        }
+
+                        if (isDate) {
+                          const dateVal =
+                            stringValue &&
+                            !isNaN(new Date(stringValue).getTime())
+                              ? new Date(stringValue)
+                              : undefined;
+                          return (
+                            <CalendarInput
+                              value={dateVal}
+                              onChange={(date) =>
+                                field.onChange(date ? date.toISOString() : "")
+                              }
+                            />
+                          );
+                        }
+
+                        if (isTime) {
+                          const dateVal =
+                            stringValue &&
+                            !isNaN(new Date(stringValue).getTime())
+                              ? new Date(stringValue)
+                              : undefined;
+                          return (
+                            <TimePicker
+                              date={dateVal}
+                              setDate={(date) =>
+                                field.onChange(date ? date.toISOString() : "")
+                              }
+                            />
+                          );
+                        }
+
                         return (
-                          <Textarea
+                          <Input
                             {...field}
                             value={stringValue}
-                            className="min-h-[80px] font-mono text-sm rounded-none border border-slate-200 bg-white focus-visible:ring-0 focus-visible:border-indigo-500 transition-colors shadow-none p-3"
+                            onChange={(e) => {
+                              let val: any = e.target.value;
+                              if (typeof value === "number") val = Number(val);
+                              field.onChange(val);
+                            }}
+                            className="rounded-none border border-slate-200 bg-white focus-visible:ring-0 focus-visible:border-indigo-500 transition-colors shadow-none font-medium h-10 px-3 text-sm"
                           />
                         );
-                      }
-
-                      if (isDate) {
-                        const dateVal =
-                          stringValue && !isNaN(new Date(stringValue).getTime())
-                            ? new Date(stringValue)
-                            : undefined;
-                        return (
-                          <CalendarInput
-                            value={dateVal}
-                            onChange={(date) =>
-                              field.onChange(date ? date.toISOString() : "")
-                            }
-                          />
-                        );
-                      }
-
-                      if (isTime) {
-                        const dateVal =
-                          stringValue && !isNaN(new Date(stringValue).getTime())
-                            ? new Date(stringValue)
-                            : undefined;
-                        return (
-                          <TimePicker
-                            date={dateVal}
-                            setDate={(date) =>
-                              field.onChange(date ? date.toISOString() : "")
-                            }
-                          />
-                        );
-                      }
-
-                      return (
-                        <Input
-                          {...field}
-                          value={stringValue}
-                          onChange={(e) => {
-                            let val: any = e.target.value;
-                            if (typeof value === "number") val = Number(val);
-                            field.onChange(val);
-                          }}
-                          className="rounded-none border border-slate-200 bg-white focus-visible:ring-0 focus-visible:border-indigo-500 transition-colors shadow-none font-medium h-10 px-3 text-sm"
-                        />
-                      );
-                    }}
-                  />
-                </div>
-              );
-            })}
+                      }}
+                    />
+                  </div>
+                );
+              },
+            )}
 
             {/* Enhance with AI Card */}
             <div className="mt-8 bg-slate-50 border border-slate-200 p-5 rounded-none shadow-sm flex flex-col gap-3">
@@ -272,27 +309,23 @@ const EnhanceActionSheet = ({
         </ScrollArea>
 
         <div className="p-6 border-t-2 border-slate-200 bg-white shrink-0 mt-auto">
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-6">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isPending}
-              className="rounded-none border-2 border-slate-200 font-bold uppercase tracking-wider text-[10px] text-slate-600 hover:bg-slate-50 shadow-none h-10 px-6 transition-colors"
+              disabled={isPending || isUpdating}
+              className="rounded-none border-2 border-slate-200 font-bold uppercase tracking-wider text-xs text-slate-600 hover:bg-slate-50 shadow-none h-10 px-6 transition-colors"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               form="enhance-form"
-              disabled={isPending}
-              className="gap-2 rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-[10px] shadow-none h-10 px-6 transition-colors"
+              className="w-36 rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-xs h-10 px-8 shadow-none transition-colors"
+              disabled={isPending || isUpdating || isEnhancing}
+              loading={isPending || isUpdating}
             >
-              {isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" strokeWidth={2.5} />
-              )}
               Save & Approve
             </Button>
           </div>

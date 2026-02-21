@@ -9,6 +9,7 @@ export const useGetPersona = () => {
       const { data } = await api.get("/user/persona");
       return data;
     },
+    refetchOnWindowFocus: false,
   });
 };
 

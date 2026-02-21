@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetPersona } from "@/services/query/persona/persona.api";
 import { Briefcase, Building2, ChevronRight, Plus, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,12 +8,17 @@ export const DashboardHeader = ({
   userName,
   userEmail,
   isPersonaCreated,
+  role,
+  company,
+  projectKeywords,
 }: {
   userName: string;
   userEmail: string;
   isPersonaCreated: boolean;
+  role: string;
+  company: string;
+  projectKeywords: string[];
 }) => {
-  const { data: personaData } = useGetPersona();
   const navigate = useNavigate();
 
   return (
@@ -57,7 +61,7 @@ export const DashboardHeader = ({
 
         {/* Persona Details Area */}
         <div className="p-8 md:w-2/3 flex items-center justify-between">
-          {isPersonaCreated && personaData?.persona ? (
+          {isPersonaCreated ? (
             <div className="flex flex-col gap-5 w-full">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#1a1a1a] border border-[#333] rounded-none w-fit">
                 <span className="size-1.5 rounded-none bg-slate-300"></span>
@@ -78,7 +82,7 @@ export const DashboardHeader = ({
                           Role
                         </span>
                         <span className="text-white font-bold text-[15px] leading-none">
-                          {personaData.persona.role}
+                          {role}
                         </span>
                       </div>
                     </div>
@@ -92,7 +96,7 @@ export const DashboardHeader = ({
                           Company
                         </span>
                         <span className="text-white font-bold text-[15px] leading-none">
-                          {personaData.persona.company}
+                          {company}
                         </span>
                       </div>
                     </div>
@@ -104,14 +108,14 @@ export const DashboardHeader = ({
                   onClick={() => navigate("/persona")}
                   className="rounded-none border-[#333] text-slate-300 hover:bg-[#1a1a1a] hover:text-white transition-all bg-transparent h-9 text-xs font-semibold px-4"
                 >
-                  Edit Persona{" "}
+                  Edit Persona
                   <ChevronRight className="ml-1 size-3 text-slate-500" />
                 </Button>
               </div>
 
-              {personaData.persona.projectKeywords?.length > 0 && (
+              {projectKeywords?.length > 0 && (
                 <div className="flex gap-2 flex-wrap">
-                  {personaData.persona.projectKeywords.map((tag) => (
+                  {projectKeywords.map((tag) => (
                     <span
                       key={tag}
                       className="px-4 py-1.5 bg-transparent border border-[#333] rounded-none text-[10px] font-semibold text-slate-400"

@@ -41,7 +41,7 @@ const ConnectToolModal = ({
             description={`Set up your persona to start using ${tool.name}.`}
           />
         ),
-        { id: `tool-connect-error-${tool.id}` },
+        { id: `tool-connect-error-${tool.id}`, unstyled: true },
       );
       return;
     }
@@ -76,7 +76,7 @@ const ConnectToolModal = ({
                     description={`${tool.name} connected successfully!`}
                   />
                 ),
-                { id: `tool-connect-success-${tool.id}` },
+                { id: `tool-connect-success-${tool.id}`, unstyled: true },
               );
             }
           },
@@ -91,7 +91,7 @@ const ConnectToolModal = ({
             description={`Failed to connect ${tool.name}. Please try again.`}
           />
         ),
-        { id: `tool-connect-error-${tool.id}` },
+        { id: `tool-connect-error-${tool.id}`, unstyled: true },
       );
     }
   };
