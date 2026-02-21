@@ -16,7 +16,11 @@ export const useActions = () => {
 export const useApproveAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Action, Error, { payload?: any }>({
+  return useMutation<
+    Action,
+    Error,
+    { action_id: string; source: string; type: string }
+  >({
     mutationFn: async (payloadData) => {
       const { data } = await api.post(`/actions/approve`, payloadData);
       return data;

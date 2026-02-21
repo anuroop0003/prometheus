@@ -126,12 +126,9 @@ const NotificationCard = ({
   const [isEnhanceOpen, setIsEnhanceOpen] = useState<boolean>(false);
   const [isDeclineOpen, setIsDeclineOpen] = useState<boolean>(false);
 
-  const onAction = async (
-    nextStatus: "approved" | "declined",
-    overridePayload?: any,
-  ) => {
+  const onAction = async (nextStatus: "approved" | "declined") => {
     if (nextStatus === "approved") {
-      toast.promise(approveAction(overridePayload || fullAction), {
+      toast.promise(approveAction({ action_id: id, source, type }), {
         icon: null,
         loading: (
           <PendingToaster
@@ -298,7 +295,7 @@ const NotificationCard = ({
         onOpenChange={setIsEnhanceOpen}
         originalAction={fullAction}
         isPending={isPending}
-        onSave={(editedAction) => onAction("approved", editedAction)}
+        onSave={() => onAction("approved")}
       />
 
       <DeclineActionModal

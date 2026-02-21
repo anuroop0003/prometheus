@@ -31,7 +31,7 @@ interface EnhanceActionSheetProps {
   onOpenChange: (open: boolean) => void;
   originalAction: Record<string, any>;
   isPending: boolean;
-  onSave: (editedPayload: any) => void;
+  onSave: () => void;
   actionId: string;
 }
 
@@ -113,7 +113,7 @@ const EnhanceActionSheet = ({
 
     try {
       await updateActionPayload({ id: actionId, payload: fullAction.payload });
-      onSave(fullAction);
+      onSave();
     } catch {
       toast.custom(
         () => (
