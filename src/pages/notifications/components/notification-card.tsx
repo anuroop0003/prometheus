@@ -269,7 +269,7 @@ const NotificationCard = ({
 
                   <Button
                     variant="outline"
-                    className="rounded-none border-2 border-slate-200 text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-700 font-bold uppercase tracking-wider text-xs h-10 px-6 shadow-none transition-colors"
+                    className="w-30 rounded-none border-2 border-slate-200 text-slate-600 hover:bg-red-50 hover:border-red-200 hover:text-red-700 font-bold uppercase tracking-wider text-xs h-10 px-6 shadow-none transition-colors"
                     onClick={() => setIsDeclineOpen(true)}
                     disabled={isPending}
                   >
@@ -277,7 +277,7 @@ const NotificationCard = ({
                   </Button>
 
                   <Button
-                    className="rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-xs h-10 px-8 shadow-none transition-colors"
+                    className="w-30 rounded-none border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800 font-bold uppercase tracking-wider text-xs h-10 px-8 shadow-none transition-colors"
                     onClick={() => onAction("approved")}
                     disabled={isPending}
                     loading={isPending}

@@ -227,7 +227,7 @@ const EnhanceActionSheet = ({
                         if (isDate) {
                           const dateVal =
                             stringValue &&
-                              !isNaN(new Date(stringValue).getTime())
+                            !isNaN(new Date(stringValue).getTime())
                               ? new Date(stringValue)
                               : undefined;
                           return (
@@ -243,7 +243,7 @@ const EnhanceActionSheet = ({
                         if (isTime) {
                           const dateVal =
                             stringValue &&
-                              !isNaN(new Date(stringValue).getTime())
+                            !isNaN(new Date(stringValue).getTime())
                               ? new Date(stringValue)
                               : undefined;
                           return (
