@@ -10,6 +10,7 @@ export const useActions = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    refetchInterval: 5000,
   });
 };
 
